@@ -1,0 +1,16 @@
+version: "3"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ezralazuardy/pathfinder-php
+    tty: true
+    restart: unless-stopped
+    ports:
+      - 8081:80
+    volumes:
+      - app:/var/www/html
+volumes:
+  app:
+    driver: local

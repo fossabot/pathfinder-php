@@ -1,0 +1,41 @@
+name: Docker
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  docker-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Install Github Action Checkout
+        uses: actions/checkout@v2
+
+      - name: 📥 Install Docker Layer Caching
+        uses: satackey/action-docker-layer-caching@v0.0.11
+        continue-on-error: true
+
+      - name: 🔨 Build Application Image
+        run: docker-compose build
+
+      - name: 🔼 Run Application Containers (Detached Mode)
+        run: docker-compose up -d
+
+      - name: 💤 Wait Application Containers to be ready
+        uses: juliangruber/sleep-action@v1
+        with:
+          time: 5s
+
+      - name: 🔍 Check Docker Containers Status
+        run: docker ps -a
+
+      - name: 🛑 Stop Application Containers
+        run: docker-compose down
+
+      - name: 🗑️ Prune unused Docker volumes and images
+        run: |
+          docker volume prune -f
+          docker image prune -f
